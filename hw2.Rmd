@@ -1,7 +1,7 @@
 ---
 title: "p8105_hw2_rh3195"
 autohr: "Ruijie He"
-output: html_document
+output: github_document
 date: "2023-10-04"
 ---
 ```{r message = FALSE}
@@ -75,9 +75,78 @@ print(data_538)
 > In `pols` dataset, there are `r nrow(pols)` observations and `r ncol(pols)` variables.
 
 ## Problem 2
-> Read and clean Mr.Trash Wheel sheet
 
-```{r}
+### Read and clean Mr.Trash Wheel sheet
 
+```{r mr.trash wheel}
+mr.trashwheel =
+  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |>
+  clean_names() |>
+  mutate(
+    year = as.numeric(year),
+    name = "mr_trash_wheel",
+    homes_powered = (weight_tons * 500/30)
+  )
+print(mr.trashwheel)
 ```
+
+### Clean professor trash wheel sheet
+
+```{r professor trash wheel}
+professor_trash_wheel =
+  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |>
+  clean_names() |>
+  mutate(
+    year = as.numeric(year),
+    name = "professor_trash_wheel",
+    homes_powered = (weight_tons * 500/30)
+  )
+print(professor_trash_wheel)
+```
+
+### Clean Gwynnda trash wheel sheet
+
+```{r Gwynnda trash wheel}
+gwynnda_trash_wheel =
+  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |>
+  clean_names() |>
+  mutate(
+    year = as.numeric(year),
+    name = "gwynnda_trash_wheel",
+    homes_powered = (weight_tons * 500/30)
+  )
+print(gwynnda_trash_wheel)
+```
+
+### Combine the three data sheet
+
+```{r message = FALSE}
+trash_data = bind_rows(list(mr.trashwheel, professor_trash_wheel, gwynnda_trash_wheel)) |>
+  select(name, everything())
+
+print(trash_data)
+```
+
+## Problem 3
+
+### Import, clean, and tidy the dataset of baseline
+```{r}
+baseline_data = 
+  read_csv("./data/data_mci/MCI_baseline.csv", skip =1, na = c(".")) |>
+  clean_names() |>
+  mutate(
+    sex = case_match(
+      sex,
+      1 ~ "male",
+      0 ~ "female"
+    ),
+    apoe4 = case_match(
+      apoe4,
+      1 ~ "carrier",
+      0 ~ "non-carrier"
+  ))
+print(baseline_data)
+```
+
+
 
