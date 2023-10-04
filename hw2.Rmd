@@ -1,0 +1,83 @@
+---
+title: "p8105_hw2_rh3195"
+autohr: "Ruijie He"
+output: html_document
+date: "2023-10-04"
+---
+```{r message = FALSE}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+library(janitor)
+```
+
+## Problem 1
+
+### Import pols-month.csv, clean data
+
+```{r clean_538_pols}
+month_df = 
+  tibble(
+    month_num = 1:12,
+    month_abb = month.abb,
+    month = month.name
+  )
+
+pols = 
+  read_csv("./data/fivethirtyeight_datasets/pols-month.csv") |>
+  separate(mon, into = c("year", "month_num", "day"), convert = TRUE) |>
+  mutate(
+    president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |>
+  left_join(x = _, y = month_df) |> 
+  select(year, month, everything(), -day, -starts_with("prez"))
+
+print(pols)
+```
+
+### Clean the data in snp.csv
+
+```{r clean_538_snp}
+snp =
+  read_csv("./data/fivethirtyeight_datasets/snp.csv") |>
+  janitor::clean_names() |>
+  separate(date, into = c("month", "day", "year"), convert = TRUE) |>
+  arrange(year, month) |>
+  mutate(month = month.name[month]) |>
+  select(year, month, close)
+print(snp)
+```
+
+### Tidy the unemployment.csv
+
+```{r tidy_538_unemployment}
+unemployment = 
+  read_csv("./data/fivethirtyeight_datasets/unemployment.csv") |>
+  rename(year = Year) |>
+  pivot_longer(
+    Jan:Dec, 
+    names_to = "month_abb",
+    values_to = "unemployment"
+  ) |> 
+  left_join(x = _, y = month_df) |> 
+  select(year, month, unemployment)
+print (unemployment)
+```
+### Merge three dataset
+
+```{r}
+data_538 =
+  left_join(pols, snp) |>
+  left_join(x =_, y = unemployment)
+
+str(data_538)
+print(data_538)
+```
+> In `pols` dataset, there are `r nrow(pols)` observations and `r ncol(pols)` variables.
+
+## Problem 2
+> Read and clean Mr.Trash Wheel sheet
+
+```{r}
+
+```
+
