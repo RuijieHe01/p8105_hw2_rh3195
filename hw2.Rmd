@@ -1,6 +1,6 @@
 ---
 title: "p8105_hw2_rh3195"
-autohr: "Ruijie He"
+author: "Ruijie He"
 output: github_document
 date: "2023-10-04"
 ---
@@ -13,7 +13,7 @@ library(janitor)
 
 ## Problem 1
 
-### Import pols-month.csv, clean data
+**Import pols-month.csv, clean data**
 
 ```{r clean_538_pols}
 month_df = 
@@ -34,7 +34,7 @@ pols =
 print(pols)
 ```
 
-### Clean the data in snp.csv
+**Clean the data in snp.csv**
 
 ```{r clean_538_snp}
 snp =
@@ -49,7 +49,7 @@ snp =
 print(snp)
 ```
 
-### Tidy the unemployment.csv
+**Tidy the unemployment.csv**
 
 ```{r tidy_538_unemployment}
 unemployment = 
@@ -64,7 +64,7 @@ unemployment =
   select(year, month, unemployment)
 print (unemployment)
 ```
-### Merge three dataset
+**Merge three dataset**
 
 ```{r}
 data_538 =
@@ -75,13 +75,13 @@ str(data_538)
 print(data_538)
 ```
 
-#Data description#
+**Data description**
 
-> In `pols` dataset, there are `r nrow(pols)` observations and `r ncol(pols)` variables.
+> In `pols` dataset, there are `r nrow(pols)` observations and `r ncol(pols)` variables. In `snp` dataset, there are `r nrow(snp)` observations and `r ncol(snp)` variables. And there are `r nrow(unemployment)` observations and `rncol(unemployment)` variables in `unemployment` dataset.
 
 ## Problem 2
 
-### Read and clean Mr.Trash Wheel sheet
+**Read and clean Mr.Trash Wheel sheet**
 
 ```{r mr.trash wheel}
 mr.trashwheel =
@@ -95,7 +95,7 @@ mr.trashwheel =
 print(mr.trashwheel)
 ```
 
-### Clean professor trash wheel sheet
+**Clean professor trash wheel sheet**
 
 ```{r professor trash wheel}
 professor_trash_wheel =
@@ -109,7 +109,7 @@ professor_trash_wheel =
 print(professor_trash_wheel)
 ```
 
-### Clean Gwynnda trash wheel sheet
+**Clean Gwynnda trash wheel sheet**
 
 ```{r Gwynnda trash wheel}
 gwynnda_trash_wheel =
@@ -123,7 +123,7 @@ gwynnda_trash_wheel =
 print(gwynnda_trash_wheel)
 ```
 
-### Combine the three data sheet
+**Combine the three data sheet**
 
 ```{r message = FALSE}
 trash_data = bind_rows(list(mr.trashwheel, professor_trash_wheel, gwynnda_trash_wheel)) |>
@@ -132,12 +132,12 @@ trash_data = bind_rows(list(mr.trashwheel, professor_trash_wheel, gwynnda_trash_
 print(trash_data)
 ```
 
-#Data description#
+**Data description**
 > The dataset has obersations.
 
 ## Problem 3
 
-### Import, clean, and tidy the dataset of baseline
+**Import, clean, and tidy the dataset of baseline**
 ```{r}
 baseline_data = 
   read_csv("./data/data_mci/MCI_baseline.csv", skip =1, na = c(".")) |>
@@ -160,10 +160,10 @@ print(baseline_data)
 mean(baseline_data$current_age)
 ```
 
-#Data description
+**Data description**
 > Mean age, female amount.
 
-### Clean and tidy amyloid dataset
+**Clean and tidy amyloid dataset**
 
 ```{r}
 amyloid_data =
@@ -178,8 +178,8 @@ amyloid_data =
 print (amyloid_data)
 ```
 
-## Comment on the steps of import process
+**Comment on the steps of import process**
 
-## Join and combine baseline and amyloid data
+**Join and combine baseline and amyloid data**
 
 

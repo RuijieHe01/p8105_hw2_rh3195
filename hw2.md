@@ -1,5 +1,6 @@
 p8105_hw2_rh3195
 ================
+Ruijie He
 2023-10-04
 
 ``` r
@@ -11,7 +12,7 @@ library(janitor)
 
 ## Problem 1
 
-### Import pols-month.csv, clean data
+**Import pols-month.csv, clean data**
 
 ``` r
 month_df = 
@@ -60,7 +61,7 @@ print(pols)
     ## # ℹ 812 more rows
     ## # ℹ 2 more variables: president <chr>, month_abb <chr>
 
-### Clean the data in snp.csv
+**Clean the data in snp.csv**
 
 ``` r
 snp =
@@ -102,7 +103,7 @@ print(snp)
     ## 10  2000 October   1429.
     ## # ℹ 777 more rows
 
-### Tidy the unemployment.csv
+**Tidy the unemployment.csv**
 
 ``` r
 unemployment = 
@@ -145,7 +146,7 @@ print (unemployment)
     ## 10  1948 October            3.7
     ## # ℹ 806 more rows
 
-### Merge three dataset
+**Merge three dataset**
 
 ``` r
 data_538 =
@@ -196,13 +197,16 @@ print(data_538)
     ## # ℹ 4 more variables: president <chr>, month_abb <chr>, close <dbl>,
     ## #   unemployment <dbl>
 
-\#Data description#
+**Data description**
 
-> In `pols` dataset, there are 822 observations and 11 variables.
+> In `pols` dataset, there are 822 observations and 11 variables. In
+> `snp` dataset, there are 787 observations and 3 variables. And there
+> are 816 observations and `rncol(unemployment)` variables in
+> `unemployment` dataset.
 
 ## Problem 2
 
-### Read and clean Mr.Trash Wheel sheet
+**Read and clean Mr.Trash Wheel sheet**
 
 ``` r
 mr.trashwheel =
@@ -234,7 +238,7 @@ print(mr.trashwheel)
     ## #   cigarette_butts <dbl>, glass_bottles <dbl>, plastic_bags <dbl>,
     ## #   wrappers <dbl>, sports_balls <dbl>, homes_powered <dbl>, name <chr>
 
-### Clean professor trash wheel sheet
+**Clean professor trash wheel sheet**
 
 ``` r
 professor_trash_wheel =
@@ -266,7 +270,7 @@ print(professor_trash_wheel)
     ## #   cigarette_butts <dbl>, glass_bottles <dbl>, plastic_bags <dbl>,
     ## #   wrappers <dbl>, homes_powered <dbl>, name <chr>
 
-### Clean Gwynnda trash wheel sheet
+**Clean Gwynnda trash wheel sheet**
 
 ``` r
 gwynnda_trash_wheel =
@@ -298,7 +302,7 @@ print(gwynnda_trash_wheel)
     ## #   cigarette_butts <dbl>, plastic_bags <dbl>, wrappers <dbl>,
     ## #   homes_powered <dbl>, name <chr>
 
-### Combine the three data sheet
+**Combine the three data sheet**
 
 ``` r
 trash_data = bind_rows(list(mr.trashwheel, professor_trash_wheel, gwynnda_trash_wheel)) |>
@@ -325,11 +329,11 @@ print(trash_data)
     ## #   cigarette_butts <dbl>, glass_bottles <dbl>, plastic_bags <dbl>,
     ## #   wrappers <dbl>, sports_balls <dbl>, homes_powered <dbl>
 
-\#Data description# \> The dataset has obersations.
+**Data description** \> The dataset has obersations.
 
 ## Problem 3
 
-### Import, clean, and tidy the dataset of baseline
+**Import, clean, and tidy the dataset of baseline**
 
 ``` r
 baseline_data = 
@@ -381,9 +385,9 @@ mean(baseline_data$current_age)
 
     ## [1] 65.61134
 
-\#Data description \> Mean age, female amount.
+**Data description** \> Mean age, female amount.
 
-### Clean and tidy amyloid dataset
+**Clean and tidy amyloid dataset**
 
 ``` r
 amyloid_data =
@@ -425,6 +429,6 @@ print (amyloid_data)
     ## 10     2 time_8        0.10661845   
     ## # ℹ 2,425 more rows
 
-## Comment on the steps of import process
+**Comment on the steps of import process**
 
-## Join and combine baseline and amyloid data
+**Join and combine baseline and amyloid data**
