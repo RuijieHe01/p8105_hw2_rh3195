@@ -68,7 +68,9 @@ snp =
   janitor::clean_names() |>
   separate(date, into = c("month", "day", "year"), convert = TRUE) |>
   arrange(year, month) |>
-  mutate(month = month.name[month]) |>
+  mutate(
+    year = ifelse(year >= 50, 1900 + year, 2000+year),
+    month = month.name[month]) |>
   select(year, month, close)
 ```
 
@@ -87,17 +89,17 @@ print(snp)
 
     ## # A tibble: 787 × 3
     ##     year month     close
-    ##    <int> <chr>     <dbl>
-    ##  1     0 January   1394.
-    ##  2     0 February  1366.
-    ##  3     0 March     1499.
-    ##  4     0 April     1452.
-    ##  5     0 May       1421.
-    ##  6     0 June      1455.
-    ##  7     0 July      1431.
-    ##  8     0 August    1518.
-    ##  9     0 September 1437.
-    ## 10     0 October   1429.
+    ##    <dbl> <chr>     <dbl>
+    ##  1  2000 January   1394.
+    ##  2  2000 February  1366.
+    ##  3  2000 March     1499.
+    ##  4  2000 April     1452.
+    ##  5  2000 May       1421.
+    ##  6  2000 June      1455.
+    ##  7  2000 July      1431.
+    ##  8  2000 August    1518.
+    ##  9  2000 September 1437.
+    ## 10  2000 October   1429.
     ## # ℹ 777 more rows
 
 ### Tidy the unemployment.csv
@@ -193,6 +195,8 @@ print(data_538)
     ## # ℹ 812 more rows
     ## # ℹ 4 more variables: president <chr>, month_abb <chr>, close <dbl>,
     ## #   unemployment <dbl>
+
+\#Data description#
 
 > In `pols` dataset, there are 822 observations and 11 variables.
 
@@ -321,6 +325,8 @@ print(trash_data)
     ## #   cigarette_butts <dbl>, glass_bottles <dbl>, plastic_bags <dbl>,
     ## #   wrappers <dbl>, sports_balls <dbl>, homes_powered <dbl>
 
+\#Data description# \> The dataset has obersations.
+
 ## Problem 3
 
 ### Import, clean, and tidy the dataset of baseline
@@ -337,9 +343,9 @@ baseline_data =
     ),
     apoe4 = case_match(
       apoe4,
-      1 ~ "carrier",
-      0 ~ "non-carrier"
-  ))
+      1 ~ "TRUE",
+      0 ~ "FALSE")) |>
+  drop_na(age_at_onset)
 ```
 
     ## Rows: 483 Columns: 6
@@ -354,17 +360,71 @@ baseline_data =
 print(baseline_data)
 ```
 
-    ## # A tibble: 483 × 6
-    ##       id current_age sex    education apoe4       age_at_onset
-    ##    <dbl>       <dbl> <chr>      <dbl> <chr>              <dbl>
-    ##  1     1        63.1 female        16 carrier             NA  
-    ##  2     2        65.6 female        20 carrier             NA  
-    ##  3     3        62.5 male          16 carrier             66.8
-    ##  4     4        69.8 female        16 non-carrier         NA  
-    ##  5     5        66   male          16 non-carrier         68.7
-    ##  6     6        62.5 male          16 non-carrier         NA  
-    ##  7     7        66.5 male          18 non-carrier         74  
-    ##  8     8        67.2 female        18 non-carrier         NA  
-    ##  9     9        66.7 female        16 non-carrier         NA  
-    ## 10    10        64.1 female        18 non-carrier         NA  
-    ## # ℹ 473 more rows
+    ## # A tibble: 97 × 6
+    ##       id current_age sex    education apoe4 age_at_onset
+    ##    <dbl>       <dbl> <chr>      <dbl> <chr>        <dbl>
+    ##  1     3        62.5 male          16 TRUE          66.8
+    ##  2     5        66   male          16 FALSE         68.7
+    ##  3     7        66.5 male          18 FALSE         74  
+    ##  4    13        63.1 male          12 TRUE          69  
+    ##  5    14        58.4 female        20 FALSE         66.2
+    ##  6    18        67.8 male          16 FALSE         69.8
+    ##  7    22        67.3 female        20 TRUE          74.6
+    ##  8    26        64.8 female        20 TRUE          71.1
+    ##  9    30        66.3 female        12 FALSE         73.1
+    ## 10    39        68.3 female        16 TRUE          70.2
+    ## # ℹ 87 more rows
+
+``` r
+mean(baseline_data$current_age)
+```
+
+    ## [1] 65.61134
+
+\#Data description \> Mean age, female amount.
+
+### Clean and tidy amyloid dataset
+
+``` r
+amyloid_data =
+  read_csv("./data/data_mci/mci_amyloid.csv", skip =1, na = c(".", NA)) |>
+  clean_names() |>
+  rename (id = study_id) |>
+  pivot_longer(
+    baseline:time_8,
+    names_to = "time(years)",
+    values_to = "amyloid_ratio"
+  )
+```
+
+    ## Rows: 487 Columns: 6
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (5): Baseline, Time 2, Time 4, Time 6, Time 8
+    ## dbl (1): Study ID
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+print (amyloid_data)
+```
+
+    ## # A tibble: 2,435 × 3
+    ##       id `time(years)` amyloid_ratio
+    ##    <dbl> <chr>         <chr>        
+    ##  1     1 baseline      0.1105487    
+    ##  2     1 time_2        NA           
+    ##  3     1 time_4        0.109325197  
+    ##  4     1 time_6        0.104756131  
+    ##  5     1 time_8        0.107257697  
+    ##  6     2 baseline      0.107481183  
+    ##  7     2 time_2        0.109157373  
+    ##  8     2 time_4        0.109457839  
+    ##  9     2 time_6        0.105729713  
+    ## 10     2 time_8        0.10661845   
+    ## # ℹ 2,425 more rows
+
+## Comment on the steps of import process
+
+## Join and combine baseline and amyloid data

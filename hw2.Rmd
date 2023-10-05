@@ -42,7 +42,9 @@ snp =
   janitor::clean_names() |>
   separate(date, into = c("month", "day", "year"), convert = TRUE) |>
   arrange(year, month) |>
-  mutate(month = month.name[month]) |>
+  mutate(
+    year = ifelse(year >= 50, 1900 + year, 2000+year),
+    month = month.name[month]) |>
   select(year, month, close)
 print(snp)
 ```
@@ -72,6 +74,9 @@ data_538 =
 str(data_538)
 print(data_538)
 ```
+
+#Data description#
+
 > In `pols` dataset, there are `r nrow(pols)` observations and `r ncol(pols)` variables.
 
 ## Problem 2
@@ -127,6 +132,9 @@ trash_data = bind_rows(list(mr.trashwheel, professor_trash_wheel, gwynnda_trash_
 print(trash_data)
 ```
 
+#Data description#
+> The dataset has obersations.
+
 ## Problem 3
 
 ### Import, clean, and tidy the dataset of baseline
@@ -142,11 +150,36 @@ baseline_data =
     ),
     apoe4 = case_match(
       apoe4,
-      1 ~ "carrier",
-      0 ~ "non-carrier"
-  ))
+      1 ~ "TRUE",
+      0 ~ "FALSE")) |>
+  drop_na(age_at_onset)
+
 print(baseline_data)
 ```
+```{r}
+mean(baseline_data$current_age)
+```
 
+#Data description
+> Mean age, female amount.
+
+### Clean and tidy amyloid dataset
+
+```{r}
+amyloid_data =
+  read_csv("./data/data_mci/mci_amyloid.csv", skip =1, na = c(".", NA)) |>
+  clean_names() |>
+  rename (id = study_id) |>
+  pivot_longer(
+    baseline:time_8,
+    names_to = "time(years)",
+    values_to = "amyloid_ratio"
+  )
+print (amyloid_data)
+```
+
+## Comment on the steps of import process
+
+## Join and combine baseline and amyloid data
 
 
