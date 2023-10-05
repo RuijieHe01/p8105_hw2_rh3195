@@ -15,18 +15,16 @@ library(janitor)
 **Import pols-month.csv, clean data**
 
 ``` r
-month_df = 
-  tibble(
-    month_num = 1:12,
-    month_abb = month.abb,
-    month = month.name
-  )
+ month_df = 
+    tibble(
+    month_num = 1:12, 
+    month = month.name)
 
 pols = 
-  read_csv("./data/fivethirtyeight_datasets/pols-month.csv") |>
-  separate(mon, into = c("year", "month_num", "day"), convert = TRUE) |>
+  read_csv("./data/fivethirtyeight_datasets/pols-month.csv") |> 
+  separate(mon, into = c("year", "month_num", "day"), convert = TRUE) |> 
   mutate(
-    president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |>
+    president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |> 
   left_join(x = _, y = month_df) |> 
   select(year, month, everything(), -day, -starts_with("prez"))
 ```
@@ -45,7 +43,7 @@ pols =
 print(pols)
 ```
 
-    ## # A tibble: 822 × 11
+    ## # A tibble: 822 × 10
     ##     year month     month_num gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem
     ##    <int> <chr>         <int>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
     ##  1  1947 January           1      23      51     253      23      45     198
@@ -59,14 +57,18 @@ print(pols)
     ##  9  1947 September         9      23      51     253      23      45     198
     ## 10  1947 October          10      23      51     253      23      45     198
     ## # ℹ 812 more rows
-    ## # ℹ 2 more variables: president <chr>, month_abb <chr>
+    ## # ℹ 1 more variable: president <chr>
+
+> In `pols` dataset, there are 822 observations and 10 variables. The
+> new variable `president` is added. This dataset provides the
+> information of party and president at different time.
 
 **Clean the data in snp.csv**
 
 ``` r
 snp =
   read_csv("./data/fivethirtyeight_datasets/snp.csv") |>
-  janitor::clean_names() |>
+  clean_names() |>
   separate(date, into = c("month", "day", "year"), convert = TRUE) |>
   arrange(year, month) |>
   mutate(
@@ -103,6 +105,8 @@ print(snp)
     ## 10  2000 October   1429.
     ## # ℹ 777 more rows
 
+> In `snp` dataset, there are 787 observations and 3 variables.
+
 **Tidy the unemployment.csv**
 
 ``` r
@@ -111,7 +115,7 @@ unemployment =
   rename(year = Year) |>
   pivot_longer(
     Jan:Dec, 
-    names_to = "month_abb",
+    names_to = "month",
     values_to = "unemployment"
   ) |> 
   left_join(x = _, y = month_df) |> 
@@ -125,26 +129,29 @@ unemployment =
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-    ## Joining with `by = join_by(month_abb)`
+    ## Joining with `by = join_by(month)`
 
 ``` r
 print (unemployment)
 ```
 
     ## # A tibble: 816 × 3
-    ##     year month     unemployment
-    ##    <dbl> <chr>            <dbl>
-    ##  1  1948 January            3.4
-    ##  2  1948 February           3.8
-    ##  3  1948 March              4  
-    ##  4  1948 April              3.9
-    ##  5  1948 May                3.5
-    ##  6  1948 June               3.6
-    ##  7  1948 July               3.6
-    ##  8  1948 August             3.9
-    ##  9  1948 September          3.8
-    ## 10  1948 October            3.7
+    ##     year month unemployment
+    ##    <dbl> <chr>        <dbl>
+    ##  1  1948 Jan            3.4
+    ##  2  1948 Feb            3.8
+    ##  3  1948 Mar            4  
+    ##  4  1948 Apr            3.9
+    ##  5  1948 May            3.5
+    ##  6  1948 Jun            3.6
+    ##  7  1948 Jul            3.6
+    ##  8  1948 Aug            3.9
+    ##  9  1948 Sep            3.8
+    ## 10  1948 Oct            3.7
     ## # ℹ 806 more rows
+
+> There are 816 observations and 3 variables in `unemployment` dataset.
+> Next step is to merge this dataset with the `pols` and `snp` datasets.
 
 **Merge three dataset**
 
@@ -161,7 +168,7 @@ data_538 =
 str(data_538)
 ```
 
-    ## tibble [822 × 13] (S3: tbl_df/tbl/data.frame)
+    ## tibble [822 × 12] (S3: tbl_df/tbl/data.frame)
     ##  $ year        : num [1:822] 1947 1947 1947 1947 1947 ...
     ##  $ month       : chr [1:822] "January" "February" "March" "April" ...
     ##  $ month_num   : int [1:822] 1 2 3 4 5 6 7 8 9 10 ...
@@ -172,7 +179,6 @@ str(data_538)
     ##  $ sen_dem     : num [1:822] 45 45 45 45 45 45 45 45 45 45 ...
     ##  $ rep_dem     : num [1:822] 198 198 198 198 198 198 198 198 198 198 ...
     ##  $ president   : chr [1:822] "dem" "dem" "dem" "dem" ...
-    ##  $ month_abb   : chr [1:822] "Jan" "Feb" "Mar" "Apr" ...
     ##  $ close       : num [1:822] NA NA NA NA NA NA NA NA NA NA ...
     ##  $ unemployment: num [1:822] NA NA NA NA NA NA NA NA NA NA ...
 
@@ -180,7 +186,7 @@ str(data_538)
 print(data_538)
 ```
 
-    ## # A tibble: 822 × 13
+    ## # A tibble: 822 × 12
     ##     year month     month_num gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem
     ##    <dbl> <chr>         <int>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
     ##  1  1947 January           1      23      51     253      23      45     198
@@ -194,15 +200,13 @@ print(data_538)
     ##  9  1947 September         9      23      51     253      23      45     198
     ## 10  1947 October          10      23      51     253      23      45     198
     ## # ℹ 812 more rows
-    ## # ℹ 4 more variables: president <chr>, month_abb <chr>, close <dbl>,
-    ## #   unemployment <dbl>
+    ## # ℹ 3 more variables: president <chr>, close <dbl>, unemployment <dbl>
 
 **Data description**
 
-> In `pols` dataset, there are 822 observations and 11 variables. In
-> `snp` dataset, there are 787 observations and 3 variables. And there
-> are 816 observations and `rncol(unemployment)` variables in
-> `unemployment` dataset.
+> The merged dataset has 822 observations and 12 variables. We are
+> missing some values in `close` and `unemployment` variables as there
+> are some `NA` in the list.
 
 ## Problem 2
 
@@ -213,8 +217,8 @@ mr.trashwheel =
   read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |>
   clean_names() |>
   mutate(
-    year = as.numeric(year),
     name = "mr_trash_wheel",
+    year = as.numeric(year),
     homes_powered = (weight_tons * 500/30)
   )
 print(mr.trashwheel)
@@ -237,6 +241,12 @@ print(mr.trashwheel)
     ## # ℹ 9 more variables: plastic_bottles <dbl>, polystyrene <dbl>,
     ## #   cigarette_butts <dbl>, glass_bottles <dbl>, plastic_bags <dbl>,
     ## #   wrappers <dbl>, sports_balls <dbl>, homes_powered <dbl>, name <chr>
+
+> The `mr.trashwheel` dataset has 584 observations and 15 columns. It
+> contains variables including dumpster, month, year, date, weight_tons,
+> volume_cubic_yards, plastic_bottles, polystyrene, cigarette_butts,
+> glass_bottles, plastic_bags, wrappers, sports_balls, homes_powered,
+> name.
 
 **Clean professor trash wheel sheet**
 
@@ -270,6 +280,8 @@ print(professor_trash_wheel)
     ## #   cigarette_butts <dbl>, glass_bottles <dbl>, plastic_bags <dbl>,
     ## #   wrappers <dbl>, homes_powered <dbl>, name <chr>
 
+> The `professor_trash_wheel` has 106 observations and 14 columns.
+
 **Clean Gwynnda trash wheel sheet**
 
 ``` r
@@ -302,6 +314,8 @@ print(gwynnda_trash_wheel)
     ## #   cigarette_butts <dbl>, plastic_bags <dbl>, wrappers <dbl>,
     ## #   homes_powered <dbl>, name <chr>
 
+> The Gwynnda trash wheel dataset has 155 observations and 13 columns.
+
 **Combine the three data sheet**
 
 ``` r
@@ -329,7 +343,15 @@ print(trash_data)
     ## #   cigarette_butts <dbl>, glass_bottles <dbl>, plastic_bags <dbl>,
     ## #   wrappers <dbl>, sports_balls <dbl>, homes_powered <dbl>
 
-**Data description** \> The dataset has obersations.
+**Data description**
+
+> The three datasets that has been cleaned records the trash collecting
+> detailed data, like the weight of collected trash and date. The
+> combined dataset has 845 obersations and 15 variables. There are some
+> `NA` data in `sports_balls`, `wrappers`, and `glass_bottles` datasets.
+> The total weight of trash collected by `professor_trash_wheel` is
+> 216.26 tons. Moreover, the total number of cigarettes butt by Gwynnda
+> in July, 2021 is 1.63^{4}.
 
 ## Problem 3
 
@@ -338,18 +360,22 @@ print(trash_data)
 ``` r
 baseline_data = 
   read_csv("./data/data_mci/MCI_baseline.csv", skip =1, na = c(".")) |>
-  clean_names() |>
+  janitor::clean_names() |>
   mutate(
-    sex = case_match(
-      sex,
-      1 ~ "male",
-      0 ~ "female"
-    ),
-    apoe4 = case_match(
-      apoe4,
-      1 ~ "TRUE",
-      0 ~ "FALSE")) |>
-  drop_na(age_at_onset)
+    sex =
+      case_match(
+        sex,
+        1 ~ "male",
+        0 ~ "female"),
+    sex = as.factor(sex),
+    apoe4 =
+      case_match(
+        apoe4,
+        1 ~ "carrier",
+        0 ~ "non-carrier"),
+    apoe4 = as.factor(apoe4)
+      ) |>
+  filter(!(current_age >= age_at_onset) | age_at_onset == ".")
 ```
 
     ## Rows: 483 Columns: 6
@@ -364,28 +390,49 @@ baseline_data =
 print(baseline_data)
 ```
 
-    ## # A tibble: 97 × 6
-    ##       id current_age sex    education apoe4 age_at_onset
-    ##    <dbl>       <dbl> <chr>      <dbl> <chr>        <dbl>
-    ##  1     3        62.5 male          16 TRUE          66.8
-    ##  2     5        66   male          16 FALSE         68.7
-    ##  3     7        66.5 male          18 FALSE         74  
-    ##  4    13        63.1 male          12 TRUE          69  
-    ##  5    14        58.4 female        20 FALSE         66.2
-    ##  6    18        67.8 male          16 FALSE         69.8
-    ##  7    22        67.3 female        20 TRUE          74.6
-    ##  8    26        64.8 female        20 TRUE          71.1
-    ##  9    30        66.3 female        12 FALSE         73.1
-    ## 10    39        68.3 female        16 TRUE          70.2
-    ## # ℹ 87 more rows
+    ## # A tibble: 93 × 6
+    ##       id current_age sex    education apoe4       age_at_onset
+    ##    <dbl>       <dbl> <fct>      <dbl> <fct>              <dbl>
+    ##  1     3        62.5 male          16 carrier             66.8
+    ##  2     5        66   male          16 non-carrier         68.7
+    ##  3     7        66.5 male          18 non-carrier         74  
+    ##  4    13        63.1 male          12 carrier             69  
+    ##  5    14        58.4 female        20 non-carrier         66.2
+    ##  6    18        67.8 male          16 non-carrier         69.8
+    ##  7    22        67.3 female        20 carrier             74.6
+    ##  8    26        64.8 female        20 carrier             71.1
+    ##  9    30        66.3 female        12 non-carrier         73.1
+    ## 10    39        68.3 female        16 carrier             70.2
+    ## # ℹ 83 more rows
 
 ``` r
 mean(baseline_data$current_age)
 ```
 
-    ## [1] 65.61134
+    ## [1] 65.54194
 
-**Data description** \> Mean age, female amount.
+``` r
+#Number of women who carries APOE4 gene
+prop_women_apoe4 <- baseline_data %>% 
+  filter(sex == "female") %>% 
+  summarize(mean(apoe4 == "carrier"))
+print(prop_women_apoe4)
+```
+
+    ## # A tibble: 1 × 1
+    ##   `mean(apoe4 == "carrier")`
+    ##                        <dbl>
+    ## 1                      0.667
+
+**Data description**
+
+> The dataset provides the participants of the observational study that
+> is to identify if carries APOE4 gene or not. The first row of the
+> dataset is removed as it’s just repeating the information as row 2.
+> The study has recruited 483 participants. 93 participants has
+> developed MCI and has 6 variables. The variable contains `age`, `sex`,
+> and `apoe4` gene carrying status. The average baseline age is
+> 65.5419355. 66.6666667%
 
 **Clean and tidy amyloid dataset**
 

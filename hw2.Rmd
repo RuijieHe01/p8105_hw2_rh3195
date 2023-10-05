@@ -16,30 +16,28 @@ library(janitor)
 **Import pols-month.csv, clean data**
 
 ```{r clean_538_pols}
-month_df = 
-  tibble(
-    month_num = 1:12,
-    month_abb = month.abb,
-    month = month.name
-  )
+ month_df = 
+    tibble(
+    month_num = 1:12, 
+    month = month.name)
 
 pols = 
-  read_csv("./data/fivethirtyeight_datasets/pols-month.csv") |>
-  separate(mon, into = c("year", "month_num", "day"), convert = TRUE) |>
+  read_csv("./data/fivethirtyeight_datasets/pols-month.csv") |> 
+  separate(mon, into = c("year", "month_num", "day"), convert = TRUE) |> 
   mutate(
-    president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |>
+    president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |> 
   left_join(x = _, y = month_df) |> 
   select(year, month, everything(), -day, -starts_with("prez"))
-
 print(pols)
 ```
+> In `pols` dataset, there are `r nrow(pols)` observations and `r ncol(pols)` variables. The new variable `president` is added. This dataset provides the information of party and president at different time.
 
 **Clean the data in snp.csv**
 
 ```{r clean_538_snp}
 snp =
   read_csv("./data/fivethirtyeight_datasets/snp.csv") |>
-  janitor::clean_names() |>
+  clean_names() |>
   separate(date, into = c("month", "day", "year"), convert = TRUE) |>
   arrange(year, month) |>
   mutate(
@@ -48,6 +46,7 @@ snp =
   select(year, month, close)
 print(snp)
 ```
+> In `snp` dataset, there are `r nrow(snp)` observations and `r ncol(snp)` variables.
 
 **Tidy the unemployment.csv**
 
@@ -57,13 +56,15 @@ unemployment =
   rename(year = Year) |>
   pivot_longer(
     Jan:Dec, 
-    names_to = "month_abb",
+    names_to = "month",
     values_to = "unemployment"
   ) |> 
   left_join(x = _, y = month_df) |> 
   select(year, month, unemployment)
 print (unemployment)
 ```
+> There are `r nrow(unemployment)` observations and `r ncol(unemployment)` variables in `unemployment` dataset. Next step is to merge this dataset with the `pols` and `snp` datasets.
+
 **Merge three dataset**
 
 ```{r}
@@ -77,7 +78,7 @@ print(data_538)
 
 **Data description**
 
-> In `pols` dataset, there are `r nrow(pols)` observations and `r ncol(pols)` variables. In `snp` dataset, there are `r nrow(snp)` observations and `r ncol(snp)` variables. And there are `r nrow(unemployment)` observations and `rncol(unemployment)` variables in `unemployment` dataset.
+> The merged dataset has `r nrow(data_538)` observations and `r ncol(data_538)` variables. We are missing some values in `close` and `unemployment` variables as there are some `NA` in the list.
 
 ## Problem 2
 
@@ -88,12 +89,14 @@ mr.trashwheel =
   read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |>
   clean_names() |>
   mutate(
-    year = as.numeric(year),
     name = "mr_trash_wheel",
+    year = as.numeric(year),
     homes_powered = (weight_tons * 500/30)
   )
 print(mr.trashwheel)
 ```
+
+> The `mr.trashwheel` dataset has `r nrow(mr.trashwheel)` observations and `r ncol(mr.trashwheel)` columns. It contains variables including `r colnames(mr.trashwheel)`.
 
 **Clean professor trash wheel sheet**
 
@@ -109,6 +112,8 @@ professor_trash_wheel =
 print(professor_trash_wheel)
 ```
 
+> The `professor_trash_wheel` has `r nrow(professor_trash_wheel)` observations and 14 columns.
+
 **Clean Gwynnda trash wheel sheet**
 
 ```{r Gwynnda trash wheel}
@@ -123,6 +128,8 @@ gwynnda_trash_wheel =
 print(gwynnda_trash_wheel)
 ```
 
+> The Gwynnda trash wheel dataset has 155 observations and 13 columns.
+
 **Combine the three data sheet**
 
 ```{r message = FALSE}
@@ -133,7 +140,8 @@ print(trash_data)
 ```
 
 **Data description**
-> The dataset has obersations.
+
+> The three datasets that has been cleaned records the trash collecting detailed data, like the weight of collected trash and date. The combined dataset has `r nrow(trash_data)` obersations and `r ncol(trash_data)` variables. There are some `NA` data in `sports_balls`, `wrappers`, and `glass_bottles` datasets. The total weight of trash collected by `professor_trash_wheel` is `r professor_trash_wheel %>% summarize(sum(weight_tons))` tons. Moreover, the total number of cigarettes butt by Gwynnda in July, 2021 is `r gwynnda_trash_wheel %>% filter(year == "2021", month == "July") %>% summarize(sum(cigarette_butts))`.
 
 ## Problem 3
 
@@ -141,27 +149,38 @@ print(trash_data)
 ```{r}
 baseline_data = 
   read_csv("./data/data_mci/MCI_baseline.csv", skip =1, na = c(".")) |>
-  clean_names() |>
+  janitor::clean_names() |>
   mutate(
-    sex = case_match(
-      sex,
-      1 ~ "male",
-      0 ~ "female"
-    ),
-    apoe4 = case_match(
-      apoe4,
-      1 ~ "TRUE",
-      0 ~ "FALSE")) |>
-  drop_na(age_at_onset)
+    sex =
+      case_match(
+        sex,
+        1 ~ "male",
+        0 ~ "female"),
+    sex = as.factor(sex),
+    apoe4 =
+      case_match(
+        apoe4,
+        1 ~ "carrier",
+        0 ~ "non-carrier"),
+    apoe4 = as.factor(apoe4)
+      ) |>
+  filter(!(current_age >= age_at_onset) | age_at_onset == ".")
 
 print(baseline_data)
 ```
 ```{r}
 mean(baseline_data$current_age)
+
+#Number of women who carries APOE4 gene
+prop_women_apoe4 <- baseline_data %>% 
+  filter(sex == "female") %>% 
+  summarize(mean(apoe4 == "carrier"))
+print(prop_women_apoe4)
 ```
 
 **Data description**
-> Mean age, female amount.
+
+> The dataset provides the participants of the observational study that is to identify if carries APOE4 gene or not. The first row of the dataset is removed as it's just repeating the information as row 2. The study has recruited 483 participants.  `r nrow(baseline_data)` participants has developed MCI and has `r ncol(baseline_data)` variables. The variable contains `age`, `sex`, and `apoe4` gene carrying status. The  average baseline age is `r mean(baseline_data$current_age)`. `r prop_women_apoe4*100`%
 
 **Clean and tidy amyloid dataset**
 
